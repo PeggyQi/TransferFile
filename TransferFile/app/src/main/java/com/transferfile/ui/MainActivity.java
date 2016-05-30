@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.transferfile.R;
 import com.transferfile.adapter.TabAdapter;
+import com.transferfile.fabtoolbarlib.widget.FABToolbarLayout;
 import com.transferfile.tablayout.SlidingTabLayout;
 import com.transferfile.tablayout.listener.OnTabSelectListener;
 import com.transferfile.utils.ViewFindUtils;
@@ -31,8 +32,14 @@ import com.transferfile.utils.ViewFindUtils;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,OnTabSelectListener {
+        implements NavigationView.OnNavigationItemSelectedListener,OnTabSelectListener,View.OnClickListener {
     private Context mContext = this;
+
+    /**浮动按钮**/
+    private FABToolbarLayout fabToolbarLayout;
+    private FloatingActionButton fab;
+    private View sendview, receiveview;
+
     private ArrayList<Fragment> mFragments = new ArrayList<>();
     private final String[] mTitles = {
             "历史", "图片","音频"
@@ -53,12 +60,20 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fabToolbarLayout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
+        sendview = findViewById(R.id.sendtv);
+        receiveview = findViewById(R.id.receivetv);
+
+        sendview.setOnClickListener(this);
+        receiveview.setOnClickListener(this);
+
+        fab = (FloatingActionButton) findViewById(R.id.fabtoolbar_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                fabToolbarLayout.show();
             }
         });
 
@@ -104,9 +119,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else if(fabToolbarLayout.isOpen()==true)
+            fabToolbarLayout.hide();
+        else {
             super.onBackPressed();
         }
+
     }
 
     @Override
@@ -164,5 +183,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onTabReselect(int position) {
         Toast.makeText(mContext, "onTabReselect&position--->" + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(this, "Element clicked", Toast.LENGTH_SHORT).show();
     }
 }

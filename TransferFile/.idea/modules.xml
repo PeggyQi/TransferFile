@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TransferFile.iml" filepath="$PROJECT_DIR$/TransferFile.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fabtoolbarlib/fabtoolbarlib.iml" filepath="$PROJECT_DIR$/fabtoolbarlib/fabtoolbarlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/tablayoutlib/tablayoutlib.iml" filepath="$PROJECT_DIR$/tablayoutlib/tablayoutlib.iml" />
     </modules>
   </component>

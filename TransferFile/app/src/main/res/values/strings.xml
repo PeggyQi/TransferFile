@@ -5,4 +5,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="create">创建WLAN直连</string>
+    <string name="scan">扫描WLAN</string>
 </resources>

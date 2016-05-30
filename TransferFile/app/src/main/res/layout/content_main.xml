@@ -19,7 +19,7 @@
                  android:id="@+id/tablayout"
                  android:layout_width="match_parent"
                  android:layout_height="48dp"
-                 android:background="#E45171"
+                 android:background="@color/pinkdeep"
                  app:tl_indicator_color="#eeeeee"
                  app:tl_indicator_style="TRIANGLE"
              />
@@ -28,5 +28,7 @@
                  android:id="@+id/viewpager"
                  android:layout_width="match_parent"
                  android:layout_height="470dp"/>
+
     </LinearLayout>
+
 </RelativeLayout>
