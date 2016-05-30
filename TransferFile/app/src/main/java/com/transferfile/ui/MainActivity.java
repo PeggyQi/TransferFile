@@ -1,12 +1,14 @@
 package com.transferfile.ui;
 
 import android.app.Activity;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
@@ -74,7 +76,18 @@ public class MainActivity extends AppCompatActivity
     public void initTab()
     {
         for (String title : mTitles) {
-            mFragments.add(ApplicationFragment.getInstance(title));
+            if(title.equals("历史"))
+            mFragments.add(HistoryFragment.getInstance(title));
+            if(title.equals("图片"))
+                mFragments.add(RootPhotoFragment.getInstance(title));
+            if(title.equals("音频"))
+                mFragments.add(ApplicationFragment.getInstance(title));
+            if(title.equals("视频"))
+                mFragments.add(ApplicationFragment.getInstance(title));
+            if(title.equals("文档"))
+                mFragments.add(ApplicationFragment.getInstance(title));
+            if(title.equals("应用"))
+                mFragments.add(ApplicationFragment.getInstance(title));
         }
 
         View decorView = getWindow().getDecorView();
