@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -27,18 +29,23 @@ import com.transferfile.utils.NativeImageLoader;
 
 public class ChildAdapter extends BaseAdapter {
 	private Point mPoint = new Point(0, 0);//������װImageView�Ŀ�͸ߵĶ���
-	/**
-	 * �����洢ͼƬ��ѡ�����
-	 */
+
 	private HashMap<Integer, Boolean> mSelectMap = new HashMap<Integer, Boolean>();
 	private GridView mGridView;
 	private List<String> list;
+	private List<String> selectlist=new ArrayList<String>();//存储选中文件
 	protected LayoutInflater mInflater;
+    private Context context;
+    private boolean firstSelect=false;//标记首次选中图片，隐藏fab,显示snackbar
+	public List<String> getSelectlist() {
+		return selectlist;
+	}
 
 	public ChildAdapter(Context context, List<String> list, GridView mGridView) {
 		this.list = list;
 		this.mGridView = mGridView;
 		mInflater = LayoutInflater.from(context);
+		this.context=context;
 	}
 	
 	@Override
@@ -67,8 +74,7 @@ public class ChildAdapter extends BaseAdapter {
 			viewHolder = new ViewHolder();
 			viewHolder.mImageView = (MyImageView) convertView.findViewById(R.id.child_image);
 			viewHolder.mCheckBox = (CheckBox) convertView.findViewById(R.id.child_checkbox);
-			
-			//��������ImageView�Ŀ�͸�
+
 			viewHolder.mImageView.setOnMeasureListener(new MyImageView.OnMeasureListener() {
 				
 				@Override
@@ -87,17 +93,44 @@ public class ChildAdapter extends BaseAdapter {
 			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				//�����δѡ�е�CheckBox,����Ӷ���
+
 				if(!mSelectMap.containsKey(position) || !mSelectMap.get(position)){
 					addAnimation(viewHolder.mCheckBox);
 				}
 				mSelectMap.put(position, isChecked);
+				if(isChecked==true)
+				{
+					selectlist.add(list.get(position));
+				}
+				else {
+					selectlist.remove(list.get(position));
+				}
+
+				Intent intentnum=new Intent();//选中状态改变发广播
+				intentnum.setAction("ChildAdapter_CheckBoxChange");
+				intentnum.putExtra("selectimagenum",String.valueOf(getSelectlist().size()));
+				context.sendBroadcast(intentnum);
+
+				if(selectlist.size()==0)
+				{
+					 firstSelect=false;
+					 Intent intent=new Intent();
+				     intent.setAction("ChildAdapter_CheckBoxUnClick");
+                     context.sendBroadcast(intent);
+				}
+				if(firstSelect==false&&selectlist.size()==1)
+				{
+					Intent intent=new Intent();
+					intent.setAction("ChildAdapter_CheckBoxClick");
+					context.sendBroadcast(intent);
+					firstSelect=true;
+				}
+
 			}
 		});
 		
 		viewHolder.mCheckBox.setChecked(mSelectMap.containsKey(position) ? mSelectMap.get(position) : false);
-		
-		//����NativeImageLoader����ر���ͼƬ
+
 		Bitmap bitmap = NativeImageLoader.getInstance().loadNativeImage(path, mPoint, new NativeImageLoader.NativeImageCallBack() {
 			
 			@Override

@@ -30,7 +30,7 @@ public class NativeImageLoader {
 		//��ȡӦ�ó��������ڴ�
 		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
-		//������ڴ��1/4���洢ͼƬ
+		//������ڴ��1/unselectimage���洢ͼƬ
 		final int cacheSize = maxMemory / 4;
 		mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
 			

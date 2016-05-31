@@ -2,6 +2,7 @@ package com.transferfile.ui;
 
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
@@ -55,6 +56,18 @@ public class ShowImageFragment extends Fragment {
 		adapter = new ChildAdapter(getActivity(), list, mGridView);
 		mGridView.setAdapter(adapter);
 		return v;
+	}
+
+	@Override
+	public void onDestroyView()
+	{
+		super.onDestroyView();
+		if(adapter.getSelectlist().size()!=0) {
+			Intent intent=new Intent();
+			intent.setAction("ShowImageFragmentDestroyView");
+			getContext().sendBroadcast(intent);
+		}
+
 	}
 
 

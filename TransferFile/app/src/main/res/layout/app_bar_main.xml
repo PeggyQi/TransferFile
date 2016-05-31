@@ -16,7 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/toolbar"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
@@ -50,7 +50,7 @@
         app:fabSize="normal"
         app:borderWidth="0dp"
         android:src="@drawable/abc_ic_menu_share_mtrl_alpha"
-        android:backgroundTint="@color/pinkdeep" />
+        android:backgroundTint="@color/fab" />
     </RelativeLayout>
 
         <RelativeLayout
