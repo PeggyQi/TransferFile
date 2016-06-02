@@ -52,14 +52,9 @@ public class MainActivity extends AppCompatActivity
     /**浮动按钮**/
     private FABToolbarLayout fabToolbarLayout;
     private FloatingActionButton fab;
-    private View sendview, receiveview;
-
-    /**popupwindow**/
-    private PopupWindow popuWindow;
-    private View popView;
-    private TextView sendtv;//发送按键
-    private ImageView canceliv;//取消按键
-    private TextView sendnumtv;//选中文件个数
+    private View createiv, scaniv,createtv,scantv,cancel_popupwindow,sendtv_popupwindow;
+    private TextView sendnumtv_popupwindow;
+    private boolean selectfolderflag=false;//标记选中文件
 
     private ArrayList<Fragment> mFragments = new ArrayList<>();
     private final String[] mTitles = {
@@ -67,18 +62,19 @@ public class MainActivity extends AppCompatActivity
             , "视频", "文档", "应用"
     };
     private TabAdapter mTabAdapter;
+    private ViewPager vp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initUI();//初始化侧栏
         initTab();//初始化Tab
-        initPopupwindow();//初始化Popupwindow
         filter=new IntentFilter();
         filter.addAction("ChildAdapter_CheckBoxClick");//有被选中的图片隐藏fab,弹出poupwindow
         filter.addAction("ChildAdapter_CheckBoxUnClick");//没有选中的图片弹出fab,隐藏popupwindow
         filter.addAction("ShowImageFragmentDestroyView");//该fragment销毁
         filter.addAction("ChildAdapter_CheckBoxChange");//选中文件个数发生变化
+        filter.addAction("ViewPageChange");//ViewPage发生变化
         receiver=new Receiver();
     }
 
@@ -89,17 +85,23 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         fabToolbarLayout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
-        sendview = findViewById(R.id.sendtv);
-        receiveview = findViewById(R.id.receivetv);
-
-        sendview.setOnClickListener(this);
-        receiveview.setOnClickListener(this);
+        createiv = findViewById(R.id.createiv);//创建直连按钮
+        scaniv = findViewById(R.id.scaniv);//扫描直连按钮
+        createtv=findViewById(R.id.createtv);
+        scantv=findViewById(R.id.scantv);
+        cancel_popupwindow=findViewById(R.id.cancel_popupwindow);//取消选项
+        sendtv_popupwindow=findViewById(R.id.sendtv_popupwindow);//发送文件
+        sendnumtv_popupwindow=(TextView)findViewById(R.id.sendnumtv_popupwindow);//选中数目
+        createiv.setOnClickListener(this);
+        scaniv.setOnClickListener(this);
+        cancel_popupwindow.setOnClickListener(this);
+        sendtv_popupwindow.setOnClickListener(this);
 
         fab = (FloatingActionButton) findViewById(R.id.fabtoolbar_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                changefablayout();
                 fabToolbarLayout.show();
             }
         });
@@ -134,25 +136,37 @@ public class MainActivity extends AppCompatActivity
         }
 
         View decorView = getWindow().getDecorView();
-        ViewPager vp = ViewFindUtils.find(decorView, R.id.viewpager);
+        vp = ViewFindUtils.find(decorView, R.id.viewpager);
         mTabAdapter = new TabAdapter(getSupportFragmentManager(),mFragments,mTitles);
         vp.setAdapter(mTabAdapter);
         SlidingTabLayout tabLayout = ViewFindUtils.find(decorView, R.id.tablayout);
+        tabLayout.setMainContext(mContext);//将主界面context出入Tab类中可在页面切换时发广播
         tabLayout.setViewPager(vp, mTitles, this, mFragments);
         vp.setCurrentItem(1);
     }
 
-    /**初始化popupwindow**/
-    public void initPopupwindow()
+    /**判断fabtoolbar布局**/
+    public void changefablayout()
     {
-        if (popuWindow == null) {
-            popView = LayoutInflater.from(MainActivity.this).inflate(R.layout.popuwindow, null);
-            popuWindow = new PopupWindow(popView, ViewGroup.LayoutParams.FILL_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            sendtv = (TextView) popView.findViewById(R.id.sendtv_popupwindow);
-            canceliv= (ImageView) popView.findViewById(R.id.cancel_popupwindow);
-            sendnumtv=(TextView)popView.findViewById(R.id.sendnumtv_popupwindow);
-
+        if(selectfolderflag==true)//选中文件
+        {
+            createiv.setVisibility(View.INVISIBLE);
+            scaniv.setVisibility(View.INVISIBLE);
+            createtv.setVisibility(View.INVISIBLE);
+            scantv.setVisibility(View.INVISIBLE);
+            cancel_popupwindow.setVisibility(View.VISIBLE);
+            sendtv_popupwindow.setVisibility(View.VISIBLE);
+            sendnumtv_popupwindow.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            createiv.setVisibility(View.VISIBLE);
+            scaniv.setVisibility(View.VISIBLE);
+            createtv.setVisibility(View.VISIBLE);
+            scantv.setVisibility(View.VISIBLE);
+            cancel_popupwindow.setVisibility(View.INVISIBLE);
+            sendtv_popupwindow.setVisibility(View.INVISIBLE);
+            sendnumtv_popupwindow.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -243,7 +257,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(this, "Element clicked", Toast.LENGTH_SHORT).show();
+        switch(v.getId())
+        {
+            case R.id.cancel_popupwindow:
+                 int currentitem=vp.getCurrentItem();
+                Toast.makeText(this, "当前view"+currentitem, Toast.LENGTH_SHORT).show();
+                if(currentitem==1)
+                    ShowImageFragment.getSif().clearSelectData();
+                break;
+            default:
+                break;
+
+        }
+
     }
 
     public class Receiver extends BroadcastReceiver{
@@ -252,73 +278,39 @@ public class MainActivity extends AppCompatActivity
         {
             if(intent.getAction().equals("ChildAdapter_CheckBoxClick"))//文件被选中
             {
-                if(fabToolbarLayout.isOpen()==true)
-                    fabToolbarLayout.hide();
-                try {
-                    Thread.currentThread().sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                showPopuWindow(getWindow().findViewById(R.id.popupwindow_showimage));
-                fab.setVisibility(View.INVISIBLE);
+                selectfolderflag=true;
+                changefablayout();
+                if(fabToolbarLayout.isOpen()==false)
+                    fabToolbarLayout.show();
             }
             if(intent.getAction().equals("ChildAdapter_CheckBoxUnClick"))//选中0个文件
            {
-               if(popuWindow!=null)
-               popuWindow.dismiss();
-               fab.setVisibility(View.VISIBLE);
+               selectfolderflag=false;
+              if(fabToolbarLayout.isOpen()==true)
+                  fabToolbarLayout.hide();
            }
             if(intent.getAction().equals("ShowImageFragmentDestroyView"))//该ShowImagefragment被销毁
             {
-                if(popuWindow!=null)
-                popuWindow.dismiss();
-                fab.setVisibility(View.VISIBLE);
+                selectfolderflag=false;
+                if(fabToolbarLayout.isOpen()==true)
+                    fabToolbarLayout.hide();
             }
             if(intent.getAction().equals("ChildAdapter_CheckBoxChange"))//选中文件个数发生变化
             {
                 int seleectnum=Integer.parseInt(intent.getExtras().get("selectimagenum").toString());
-                sendnumtv.setText(String.valueOf(seleectnum));
-
+                sendnumtv_popupwindow.setText(String.valueOf(seleectnum));
+            }
+            if(intent.getAction().equals("ViewPageChange"))//ViewPage发生变化
+            {
+                selectfolderflag=false;
+                if(fabToolbarLayout.isOpen()==true)
+                {
+                    fabToolbarLayout.hide();
+                }
+                if(vp.getCurrentItem()==1&&ShowImageFragment.getSif()!=null)
+                    ShowImageFragment.getSif().clearSelectData();
             }
         }
-    }
-
-    /**选中文件后弹出**/
-    private void showPopuWindow(View parent) {
-
-        sendtv.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                popuWindow.dismiss();
-            }
-        });
-        canceliv.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                popuWindow.dismiss();
-            }
-        });
-
-//        ColorDrawable cd = new ColorDrawable(0x000000);
-//        popuWindow.setBackgroundDrawable(cd);
-//        //产生背景变暗效果
-//        WindowManager.LayoutParams lp = getWindow().getAttributes();
-//        lp.alpha = 0.4f;
-//        getWindow().setAttributes(lp);
-        popuWindow.setOutsideTouchable(false);//点击其他地方不消失
-        popuWindow.setFocusable(false); // 设置PopupWindow可获得焦点点击返回键直接退出
-        popuWindow.setTouchable(true); // 设置PopupWindow可触摸
-        popuWindow.showAtLocation((View) parent.getParent(), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);//popupwindow从底层由下弹出
-        popuWindow.update();
-        popuWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
-            //在dismiss中恢复透明度
-            public void onDismiss() {
-                WindowManager.LayoutParams lp = getWindow().getAttributes();
-                lp.alpha = 1f;
-
-                 getWindow().setAttributes(lp);
-            }
-        });
-
     }
 
 }

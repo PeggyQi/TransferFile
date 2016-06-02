@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.transferfile.MainActivity">
+    tools:context="com.transferfile.ui.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -58,39 +58,67 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/fabtoolbar">
             <ImageView
-                android:id="@+id/one"
+                android:id="@+id/createiv"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="@dimen/fabtoolbar3_margin"
                 android:layout_marginLeft="@dimen/fabtoolbar1_margin"
-                android:src="@drawable/abc_ic_menu_copy_mtrl_am_alpha"/>
+                android:src="@drawable/createwifi"/>
             <TextView
-                android:id="@+id/sendtv"
+                android:id="@+id/createtv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/one"
+                android:layout_below="@id/createiv"
                 android:layout_marginLeft="75dp"
                 android:text="@string/create"
                 android:textColor="@color/white"
                 android:textSize="10sp"/>
             <ImageView
-                android:id="@+id/two"
+                android:id="@+id/scaniv"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginLeft="@dimen/fabtoolbar2_margin"
                 android:layout_marginTop="@dimen/fabtoolbar3_margin"
-                android:src="@drawable/abc_ic_menu_paste_mtrl_am_alpha"/>
+                android:src="@drawable/scanwifi"/>
             <TextView
-                android:id="@+id/receivetv"
+                android:id="@+id/scantv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/two"
+                android:layout_below="@id/scaniv"
                 android:layout_marginLeft="212dp"
                 android:text="@string/scan"
                 android:textColor="@color/white"
                 android:textSize="10sp"/>
+            <ImageView
+                android:id="@+id/cancel_popupwindow"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/cancel"
+                android:layout_marginLeft="40dp"
+                android:layout_centerVertical="true"/>
+            <TextView
+                android:id="@+id/sendtv_popupwindow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:text="发送"
+                android:clickable="true"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                />
+            <TextView
+                android:id="@+id/sendnumtv_popupwindow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_marginLeft="280dp"
+                android:layout_alignTop="@id/cancel_popupwindow"
+                android:textSize="13sp"
+                />
 
         </RelativeLayout>
 

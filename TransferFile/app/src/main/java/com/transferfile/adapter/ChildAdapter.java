@@ -33,6 +33,7 @@ public class ChildAdapter extends BaseAdapter {
 	private HashMap<Integer, Boolean> mSelectMap = new HashMap<Integer, Boolean>();
 	private GridView mGridView;
 	private List<String> list;
+	private List<ViewHolder> viewHolderList=new ArrayList<ViewHolder>();//所有图片的viewholder
 	private List<String> selectlist=new ArrayList<String>();//存储选中文件
 	protected LayoutInflater mInflater;
     private Context context;
@@ -72,6 +73,7 @@ public class ChildAdapter extends BaseAdapter {
 		if(convertView == null){
 			convertView = mInflater.inflate(R.layout.item_photo_gridchild, null);
 			viewHolder = new ViewHolder();
+			viewHolderList.add(viewHolder);
 			viewHolder.mImageView = (MyImageView) convertView.findViewById(R.id.child_image);
 			viewHolder.mCheckBox = (CheckBox) convertView.findViewById(R.id.child_checkbox);
 
@@ -179,6 +181,16 @@ public class ChildAdapter extends BaseAdapter {
 		}
 		
 		return list;
+	}
+
+	/**清除选中数据**/
+	public void clearSelectDate()
+	{
+		for(int i=0;i<viewHolderList.size();i++)
+		{
+			viewHolderList.get(i).mCheckBox.setChecked(false);
+		}
+		notifyDataSetChanged();
 	}
 	
 	

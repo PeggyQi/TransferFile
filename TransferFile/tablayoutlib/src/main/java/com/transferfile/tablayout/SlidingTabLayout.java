@@ -1,6 +1,7 @@
 package com.transferfile.tablayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -37,6 +38,7 @@ import java.util.Collections;
 
 /** 滑动TabLayout,对于ViewPager的依赖性强 */
 public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.OnPageChangeListener {
+    private Context mainContext;//主界面context 可向mainActivity发送广播
     private Context mContext;
     private ViewPager mViewPager;
     private ArrayList<String> mTitles;
@@ -94,6 +96,10 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
 
     private int mLastScrollX;
     private int mHeight;
+
+    public void setMainContext(Context mainContext) {
+        this.mainContext = mainContext;
+    }
 
     public SlidingTabLayout(Context context) {
         this(context, null, 0);
@@ -313,6 +319,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
     }
 
     private void updateTabStyles() {
+
         for (int i = 0; i < mTabCount; i++) {
             View v = mTabsContainer.getChildAt(i);
 //            v.setPadding((int) mTabPadding, v.getPaddingTop(), (int) mTabPadding, v.getPaddingBottom());
@@ -423,6 +430,9 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
     }
 
     private void updateTabSelection(int position) {
+        Intent intent=new Intent();
+        intent.setAction("ViewPageChange");
+        mainContext.sendBroadcast(intent);
         for (int i = 0; i < mTabCount; ++i) {
             View tabView = mTabsContainer.getChildAt(i);
             final boolean isSelect = i == position;

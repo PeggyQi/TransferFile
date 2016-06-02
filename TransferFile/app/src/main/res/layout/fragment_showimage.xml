@@ -17,11 +17,5 @@
         android:columnWidth="90dip"
         android:numColumns="auto_fit" >
     </GridView>
-    <RelativeLayout
-        android:id="@+id/popupwindow_showimage"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"/>
 
 </RelativeLayout>

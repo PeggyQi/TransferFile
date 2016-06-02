@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,14 @@ public class ShowImageFragment extends Fragment {
 	private GridView mGridView;
 	private List<String> list;
 	private ChildAdapter adapter;
+
+	public static ShowImageFragment getSif() {
+		return sif;
+	}
+
+	private static ShowImageFragment sif;
 	public static ShowImageFragment getInstance(List<String> list) {
-		ShowImageFragment sif = new ShowImageFragment();
+		sif = new ShowImageFragment();
 		sif.list = list;
 		return sif;
 	}
@@ -61,13 +68,19 @@ public class ShowImageFragment extends Fragment {
 	@Override
 	public void onDestroyView()
 	{
-		super.onDestroyView();
+		super.onDestroyView();//点击回退键时调用
 		if(adapter.getSelectlist().size()!=0) {
 			Intent intent=new Intent();
 			intent.setAction("ShowImageFragmentDestroyView");
 			getContext().sendBroadcast(intent);
 		}
 
+	}
+
+	/**清除该页面选中数据**/
+	public void clearSelectData()
+	{
+		adapter.clearSelectDate();
 	}
 
 

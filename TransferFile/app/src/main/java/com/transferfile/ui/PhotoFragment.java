@@ -119,7 +119,7 @@ public class PhotoFragment extends Fragment {
 
         //显示进度条
         mProgressDialog = ProgressDialog.show(getActivity(), null, "正在加载...");
-
+        mGruopMap.clear();//存储图片的HashMap清零
         new Thread(new Runnable() {
 
             @Override
