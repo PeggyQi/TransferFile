@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity
             if(title.equals("图片"))
                 mFragments.add(RootPhotoFragment.getInstance(title));
             if(title.equals("音频"))
-                mFragments.add(ApplicationFragment.getInstance(title));
+                mFragments.add(MusicFragment.getInstance(title));
             if(title.equals("视频"))
                 mFragments.add(ApplicationFragment.getInstance(title));
             if(title.equals("文档"))

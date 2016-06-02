@@ -17,4 +17,20 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- ListView 样式-->
+    <style name="listIconSize" >
+        <item name="android:layout_width">45dp</item>
+        <item name="android:layout_height">45dp</item>
+    </style>
+    <style name="listItem" >
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_width">48dp</item>
+    </style>
+
+    <!-- listview checkbox 样式-->
+    <style name="list_checkbox" >
+        <item name="android:layout_height">20dp</item>
+        <item name="android:layout_width">20dp</item>
+    </style>
+
 </resources>
