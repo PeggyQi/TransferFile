@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity
             if(title.equals("音频"))
                 mFragments.add(MusicFragment.getInstance(title));
             if(title.equals("视频"))
-                mFragments.add(ApplicationFragment.getInstance(title));
+                mFragments.add(VideoFragment.getInstance(title));
             if(title.equals("文档"))
                 mFragments.add(ApplicationFragment.getInstance(title));
             if(title.equals("应用"))
