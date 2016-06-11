@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity
     };
     private TabAdapter mTabAdapter;
     private ViewPager vp;
+    private String currentTitle;//当前ViewPager
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity
             if(title.equals("视频"))
                 mFragments.add(VideoFragment.getInstance(title));
             if(title.equals("文档"))
-                mFragments.add(ApplicationFragment.getInstance(title));
+                mFragments.add(FolderFragment.getInstance(title));
             if(title.equals("应用"))
                 mFragments.add(ApplicationFragment.getInstance(title));
         }
@@ -192,6 +193,10 @@ public class MainActivity extends AppCompatActivity
         }
         else if(fabToolbarLayout.isOpen()==true)
             fabToolbarLayout.hide();
+        else if(vp.getCurrentItem()==4)//当前页面为文档时，按返回键可回到上一目录
+        {
+            FolderFragment.getFolderFragment().backMenu();
+        }
         else {
             super.onBackPressed();
         }

@@ -58,8 +58,6 @@ public class FindSongs {
                 mp3Info.setArtist(artist);
                 mp3Info.setDuration(duration);
                 mp3Info.setSize(size);
-                mp3Info.setUrl(url);
-                mp3Info.setAlbum(album);
                 mp3Info.setAlbum_id(album_id);
                 mp3Infos.add(mp3Info);
             }

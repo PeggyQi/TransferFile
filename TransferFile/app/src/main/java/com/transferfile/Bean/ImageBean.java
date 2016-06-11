@@ -1,22 +1,16 @@
 package com.transferfile.Bean;
 
-/**
- * GridView��ÿ��item����ݶ���
- * 
- * @author len
- *
- */
 public class ImageBean{
 	/**
-	 * �ļ��еĵ�һ��ͼƬ·��
+	 * 图片路径
 	 */
 	private String topImagePath;
 	/**
-	 * �ļ�����
+	 * 文件名
 	 */
 	private String folderName; 
 	/**
-	 * �ļ����е�ͼƬ��
+	 * 图片数
 	 */
 	private int imageCounts;
 	

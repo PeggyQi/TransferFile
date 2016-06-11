@@ -50,7 +50,6 @@ public class FindVideos {
                 videoInfo.setDuration(duration);
                 videoInfo.setSize(size);
                 videoInfo.setUrl(url);
-                videoInfo.setAlbum(album);
                 videoInfos.add(videoInfo);
             }
         }

@@ -3,13 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/card_title_tv"
+    <ListView
+        android:id="@+id/apklistview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:text="hello"/>
+        android:layout_height="500dp"
+        android:divider="#ffffff"/>
 
 </RelativeLayout>

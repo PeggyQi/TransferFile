@@ -1,0 +1,26 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- 显示当前路径的的文本框 -->
+    <TextView
+        android:id="@+id/path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/listicon_margin_left"
+        android:textSize="16sp"/>
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/path"
+        android:src="@drawable/divider"/>
+    <ListView
+        android:id="@+id/folderlistview"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:divider="#ffffff"
+        android:layout_below="@id/path"/>
+
+</RelativeLayout>
