@@ -1,20 +1,16 @@
 package com.transferfile.ui;
 
-import android.app.Activity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -22,26 +18,28 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.transferfile.R;
+import com.transferfile.Wifi.WiFiAdmin;
 import com.transferfile.adapter.TabAdapter;
 import com.transferfile.fabtoolbarlib.widget.FABToolbarLayout;
 import com.transferfile.tablayout.SlidingTabLayout;
 import com.transferfile.tablayout.listener.OnTabSelectListener;
+import com.transferfile.utils.CustomDialog;
+import com.transferfile.utils.GuardLoadingRenderer;
+import com.transferfile.utils.LoadingDrawable;
 import com.transferfile.utils.ViewFindUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,OnTabSelectListener,View.OnClickListener {
@@ -64,6 +62,12 @@ public class MainActivity extends AppCompatActivity
     private TabAdapter mTabAdapter;
     private ViewPager vp;
     private String currentTitle;//当前ViewPager
+
+    //增加wifi相关
+    BroadcastReceiver wifiReceiver;
+    WiFiAdmin wiFiAdmin;
+    List<WifiP2pDevice> devices = null;
+    CustomDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +80,17 @@ public class MainActivity extends AppCompatActivity
         filter.addAction("ShowImageFragmentDestroyView");//该fragment销毁
         filter.addAction("ChildAdapter_CheckBoxChange");//选中文件个数发生变化
         filter.addAction("ViewPageChange");//ViewPage发生变化
+
         receiver=new Receiver();
+
+        //wifi管理部分初始化
+        wiFiAdmin = new WiFiAdmin((WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE), this);
+        wifiReceiver = wiFiAdmin.getWiFiBroadcastReceiver();
+        filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        filter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        filter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        filter.addAction("DrawTickDone");
     }
 
     /*初始化侧栏、toolbar、fab*/
@@ -115,6 +129,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
     }
 
@@ -176,6 +191,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onResume();
         registerReceiver(receiver, filter);
+        registerReceiver(wifiReceiver, filter);
     }
 
     @Override
@@ -183,6 +199,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPause();
         unregisterReceiver(receiver);
+        unregisterReceiver(wifiReceiver);
     }
 
     @Override
@@ -260,13 +277,30 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(mContext, "onTabReselect&position--->" + position, Toast.LENGTH_SHORT).show();
     }
 
+    //FabToolBar中的组件点击事件
     @Override
     public void onClick(View v) {
         switch(v.getId())
         {
-            case R.id.cancel_popupwindow:
+            case R.id.createiv:                 //打开WiFi直连
+                wiFiAdmin.openWifi();
+                dialog = new CustomDialog(MainActivity.this,R.style.DefinDialog);
+                dialog.show();
+//                devices = wiFiAdmin.getDeviceList();
+//                if (devices != null && devices.size() > 0){
+//                    //默认链接第一个
+//                    wiFiAdmin.connectDevice(devices.get(0));
+//                }
+//                else {
+//                    Toast.makeText(MainActivity.this, "未查找到设备，请稍等",Toast.LENGTH_SHORT).show();
+//                }
+                break;
+            case R.id.scaniv:                  //扫描WiFi直连
+                wiFiAdmin.scanWifiDevice();
+                break;
+            case R.id.cancel_popupwindow:       //取消选中的所有文件
                  int currentitem=vp.getCurrentItem();
-                Toast.makeText(this, "当前view"+currentitem, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "当前view"+currentitem, Toast.LENGTH_SHORT).show();
                 if(currentitem==1)
                     ShowImageFragment.getSif().clearSelectData();
                 break;
@@ -276,6 +310,7 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
 
     public class Receiver extends BroadcastReceiver{
         @Override
@@ -314,6 +349,10 @@ public class MainActivity extends AppCompatActivity
                 }
                 if(vp.getCurrentItem()==1&&ShowImageFragment.getSif()!=null)
                     ShowImageFragment.getSif().clearSelectData();
+            }
+            if(intent.getAction().equals("DrawTickDone"))//绘制完成
+            {
+                dialog.cancel();
             }
         }
     }

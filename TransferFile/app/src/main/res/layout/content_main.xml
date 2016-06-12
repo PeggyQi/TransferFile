@@ -8,6 +8,7 @@
     tools:context="com.transferfile.ui.MainActivity"
     tools:showIn="@layout/app_bar_main">
     <LinearLayout
+        android:id="@+id/content_main_linearlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
