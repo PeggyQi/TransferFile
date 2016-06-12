@@ -34,6 +34,7 @@ import com.transferfile.fabtoolbarlib.widget.FABToolbarLayout;
 import com.transferfile.tablayout.SlidingTabLayout;
 import com.transferfile.tablayout.listener.OnTabSelectListener;
 import com.transferfile.utils.CustomDialog;
+import com.transferfile.utils.Dialog.CustomListviewDialog;
 import com.transferfile.utils.GuardLoadingRenderer;
 import com.transferfile.utils.LoadingDrawable;
 import com.transferfile.utils.ViewFindUtils;
@@ -67,7 +68,8 @@ public class MainActivity extends AppCompatActivity
     BroadcastReceiver wifiReceiver;
     WiFiAdmin wiFiAdmin;
     List<WifiP2pDevice> devices = null;
-    CustomDialog dialog;
+    CustomDialog dialog;//创建WiFi
+    CustomListviewDialog scandialog;//扫描WiFi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -297,6 +299,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.scaniv:                  //扫描WiFi直连
                 wiFiAdmin.scanWifiDevice();
+                scandialog=new CustomListviewDialog(MainActivity.this,R.style.DefinDialog);
+                scandialog.show();
                 break;
             case R.id.cancel_popupwindow:       //取消选中的所有文件
                  int currentitem=vp.getCurrentItem();
