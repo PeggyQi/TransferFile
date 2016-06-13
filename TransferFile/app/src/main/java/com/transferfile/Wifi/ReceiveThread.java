@@ -1,6 +1,7 @@
 package com.transferfile.Wifi;
 
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -98,6 +99,7 @@ public class ReceiveThread extends Thread {
             file.createNewFile();
         } catch (IOException e1) {
             // TODO Auto-generated catch block
+
             e1.printStackTrace();
         }
 

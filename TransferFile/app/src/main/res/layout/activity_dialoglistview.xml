@@ -1,19 +1,38 @@
-<LinearLayout
+<RelativeLayout
     android:id="@+id/dialogLinearLayout"
     android:orientation="vertical"
-    android:layout_height="fill_parent"
+    android:layout_height="250dp"
     android:layout_width="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/shape"
    >
 
         <TextView
             android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/greenlight"
-            android:drawablePadding="10dp"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="可连设备" />
+            android:layout_width="290dp"
+            android:layout_height="35dp"
+            android:background="@drawable/shape1"
+            android:paddingTop="7dp"
+            android:paddingLeft="20dp"
 
-</LinearLayout>
+            android:text="可连设备"
+            android:textSize="18sp"
+
+           />
+        <ImageView
+            android:id="@+id/divideriv"
+            android:layout_height="2dp"
+            android:layout_width="305dp"
+            android:layout_below="@id/text"
+            android:background="@color/graylight"/>
+        <ListView
+            android:id="@+id/dialoglistview"
+            android:layout_height="200dp"
+            android:layout_width="match_parent"
+            android:layout_below="@id/divideriv"
+            android:background="@drawable/shape1"
+
+            android:divider="#ffffff"
+            />
+
+</RelativeLayout>

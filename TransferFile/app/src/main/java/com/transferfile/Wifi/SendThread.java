@@ -1,5 +1,7 @@
 package com.transferfile.Wifi;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +29,7 @@ public class SendThread extends Thread {
 
     @Override
     public void run() {
+        if(deviceHost != null && WiFiAdmin.isConnected == true)
         sendFile(deviceHost, filePath, fileName);
     }
 
@@ -38,11 +41,15 @@ public class SendThread extends Thread {
         FileInputStream fileInputStream = null;
         InputStream is = null;
         BufferedReader br = null;
-
+        Log.e("send ex", "sendFile");
         try {
+            Log.e("send ex", "sendFile1");
             titleSocket = new Socket(deviceHost, 8887);
+            Log.e("send ex", "sendFile2");
             socket = new Socket(deviceHost, 8888);
+            Log.e("send ex", "sendFile3");
             os = socket.getOutputStream();
+            Log.e("send ex", "sendFile4");
             titleOs = titleSocket.getOutputStream();
 
             File file = new File(filePath);
@@ -51,8 +58,10 @@ public class SendThread extends Thread {
             byte buf[] = new byte[1024];
 
             //发送文件名
+            Log.e("send ex", "发送文件名前");
             titleOs.write(fileName.getBytes(), 0, fileName.getBytes().length);
             titleOs.close();
+            Log.e("send ex", "发送文件名后");
             //发送文件内容
             while ((len = fileInputStream.read(buf)) != -1) {
                 os.write(buf, 0, len);
@@ -72,10 +81,12 @@ public class SendThread extends Thread {
 
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
+            Log.e("send ex1", e.toString());
             e.printStackTrace();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            Log.e("send ex", e.toString());
         } finally {
             try {
                 if (socket != null) {

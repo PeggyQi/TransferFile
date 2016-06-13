@@ -50,6 +50,7 @@ public class PhotoFragment extends Fragment {
     private GroupAdapter adapter;
     private GridView mGroupGridView;
     private ArrayList<Fragment> mFragments;
+    static  public PhotoFragment sf;
     private Handler mHandler = new Handler(){
 
         @Override
@@ -69,8 +70,12 @@ public class PhotoFragment extends Fragment {
     };
 
     public static PhotoFragment getInstance(String title) {
-        PhotoFragment sf = new PhotoFragment();
+        sf = new PhotoFragment();
         sf.mTitle = title;
+        return sf;
+    }
+
+    public static PhotoFragment getSf() {
         return sf;
     }
 
@@ -197,5 +202,7 @@ public class PhotoFragment extends Fragment {
         return list;
 
     }
+
+
 
 }

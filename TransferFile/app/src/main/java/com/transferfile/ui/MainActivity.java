@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
     //增加wifi相关
     BroadcastReceiver wifiReceiver;
-    WiFiAdmin wiFiAdmin;
+    static public  WiFiAdmin wiFiAdmin;
     List<WifiP2pDevice> devices = null;
     CustomDialog dialog;//创建WiFi
     CustomListviewDialog scandialog;//扫描WiFi
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity
         filter.addAction("ShowImageFragmentDestroyView");//该fragment销毁
         filter.addAction("ChildAdapter_CheckBoxChange");//选中文件个数发生变化
         filter.addAction("ViewPageChange");//ViewPage发生变化
-
+        filter.addAction("WiFiConnectSuccess");//请求建立连接成功
         receiver=new Receiver();
 
         //wifi管理部分初始化
@@ -308,6 +308,15 @@ public class MainActivity extends AppCompatActivity
                 if(currentitem==1)
                     ShowImageFragment.getSif().clearSelectData();
                 break;
+            case R.id.sendtv_popupwindow://发送文件
+
+                if(vp.getCurrentItem()==1)//当前照片页面
+                {
+                    List<String> items= ShowImageFragment.getSif().getSelectImage();
+                    wiFiAdmin.sendFileByPath(items.get(0));
+                }
+
+                break;
             default:
                 break;
 
@@ -357,6 +366,11 @@ public class MainActivity extends AppCompatActivity
             if(intent.getAction().equals("DrawTickDone"))//绘制完成
             {
                 dialog.cancel();
+            }
+            if(intent.getAction().equals("WiFiConnectSuccess"))//请求建立连接成功
+            {
+                if(scandialog!=null)
+                scandialog.cancel();
             }
         }
     }

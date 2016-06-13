@@ -10,6 +10,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
 import com.transferfile.ui.MainActivity;
+import com.transferfile.utils.Dialog.CustomListviewDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,9 +85,11 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver implements Wi
      */
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peers) {
-        Log.e("wifi", "p2p state not enabled");
+        Log.e("wifi", "find wifiDevice");
         devices.clear();
         devices.addAll(peers.getDeviceList());
+        if(CustomListviewDialog.getAdapter()!=null)
+        CustomListviewDialog.getAdapter().setData(devices);
     }
 
     public List<WifiP2pDevice> getDevices(){

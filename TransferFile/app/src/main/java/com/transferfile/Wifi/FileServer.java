@@ -50,7 +50,7 @@ public class FileServer extends AsyncTask{
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                ;
+
             }
         }
     }

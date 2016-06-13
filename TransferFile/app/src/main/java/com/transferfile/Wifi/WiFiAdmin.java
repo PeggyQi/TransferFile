@@ -1,9 +1,11 @@
 package com.transferfile.Wifi;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Environment;
 import android.os.Looper;
@@ -115,7 +117,7 @@ public class WiFiAdmin {
      *
      * @param device
      */
-    public void connectDevice(WifiP2pDevice device) {
+      public void connectDevice(WifiP2pDevice device) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
         manager.connect(channel, config, new WifiP2pManager.ActionListener() {
@@ -135,7 +137,7 @@ public class WiFiAdmin {
                 fileServer = new FileServer();
                 fileServer.execute();
             }
-
+            activity.getApplicationContext().sendBroadcast(new Intent("WiFiConnectSuccess"));
             Toast.makeText(this.activity, "已连接上", Toast.LENGTH_SHORT).show();
         } else {
             fileServer = null;
@@ -180,8 +182,12 @@ public class WiFiAdmin {
     /**
      * 根据路径发送文件
      */
-    public void sendFileByPath(String filePath, String fileName) {
-        SendThread sendThread = new SendThread(getP2pDeviceIP(), filePath, fileName);
+    public void sendFileByPath(String filePath) {
+        File file = new File(filePath);
+        Log.e("filePath", filePath);
+        Log.e("fileName", file.getName());
+        Log.e("ip", getP2pDeviceIP());
+        SendThread sendThread = new SendThread(getP2pDeviceIP(), filePath, file.getName());
         sendThread.run();
     }
 

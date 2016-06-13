@@ -10,5 +10,6 @@
     <color name="fab">#ff80ab</color>
     <color name="fabtoolbar">#ebe9ea</color>
     <color name="pink">#FF6A6A</color>
-    <color name="greenlight">#c1ffc1</color>
+    <color name="graylight">#ebe9ea</color>
+    <color name="black">#000000</color>
 </resources>
