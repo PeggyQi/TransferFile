@@ -20,10 +20,14 @@ public class ApplicationFragment extends Fragment {
     private ListView mListView;
 
     private ApkAdapter apkAdapter;
-
+    public static ApplicationFragment applicationFragment;
     public static ApplicationFragment getInstance(String title) {
-        ApplicationFragment sf = new ApplicationFragment();
-        return sf;
+        applicationFragment= new ApplicationFragment();
+        return applicationFragment;
+    }
+
+    public static ApplicationFragment getApplicationFragment() {
+        return applicationFragment;
     }
 
     @Override
@@ -51,5 +55,11 @@ public class ApplicationFragment extends Fragment {
         mListView.setAdapter(apkAdapter);
 
         return v;
+    }
+
+    /**清除该页面选中数据**/
+    public void clearSelectData()
+    {
+        apkAdapter.clearSelectDate();
     }
 }

@@ -33,6 +33,9 @@
             android:layout_centerVertical="true"
             android:textColor="#000000"
             android:textSize="18sp"
+            android:maxEms="8"
+            android:singleLine="true"
+            android:ellipsize="end"
             />
         <CheckBox
             android:id="@+id/apk_checkbox"

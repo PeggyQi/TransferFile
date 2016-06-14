@@ -38,6 +38,7 @@ import java.util.Collections;
 
 /** 滑动TabLayout,对于ViewPager的依赖性强 */
 public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.OnPageChangeListener {
+    public static String ViewPageChange="ViewPageChange";//页面改变
     private Context mainContext;//主界面context 可向mainActivity发送广播
     private Context mContext;
     private ViewPager mViewPager;
@@ -431,7 +432,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
 
     private void updateTabSelection(int position) {
         Intent intent=new Intent();
-        intent.setAction("ViewPageChange");
+        intent.setAction(SlidingTabLayout.ViewPageChange);
         mainContext.sendBroadcast(intent);
         for (int i = 0; i < mTabCount; ++i) {
             View tabView = mTabsContainer.getChildAt(i);

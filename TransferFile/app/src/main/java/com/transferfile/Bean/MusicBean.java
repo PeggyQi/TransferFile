@@ -7,6 +7,16 @@ public class MusicBean {
     private String artist;
     private long duration;
     private long size;
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public void setId(long id){
         this.id = id;
     }

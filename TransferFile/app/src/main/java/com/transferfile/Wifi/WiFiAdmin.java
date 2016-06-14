@@ -36,7 +36,7 @@ public class WiFiAdmin {
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private WiFiDirectBroadcastReceiver receiver;
-    private static FileServer fileServer;
+    public static Thread fileServer;
     private MainActivity activity;
 
     public WiFiAdmin(WifiP2pManager manager, MainActivity activity) {
@@ -47,14 +47,16 @@ public class WiFiAdmin {
         //初始化接收器
         receiver = new WiFiDirectBroadcastReceiver(manager, channel, activity);
     }
+
     /**
      * open the wifi if the wifi off
      */
-    public void openWifi(){
-        if(!wifiManager.isWifiEnabled()){
+    public void openWifi() {
+        if (!wifiManager.isWifiEnabled()) {
             wifiManager.setWifiEnabled(true);
         }
     }
+
     /**
      * 获取接收器
      *
@@ -117,7 +119,7 @@ public class WiFiAdmin {
      *
      * @param device
      */
-      public void connectDevice(WifiP2pDevice device) {
+    public void connectDevice(WifiP2pDevice device) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
         manager.connect(channel, config, new WifiP2pManager.ActionListener() {
@@ -133,9 +135,9 @@ public class WiFiAdmin {
         });
         if (isConnected) {
             //开启后台文件接收
-            if (fileServer == null){
-                fileServer = new FileServer();
-                fileServer.execute();
+            if (fileServer == null) {
+                fileServer = new Thread(new FileServer());
+                fileServer.start();
             }
             activity.getApplicationContext().sendBroadcast(new Intent("WiFiConnectSuccess"));
             Toast.makeText(this.activity, "已连接上", Toast.LENGTH_SHORT).show();
@@ -184,18 +186,19 @@ public class WiFiAdmin {
      */
     public void sendFileByPath(String filePath) {
         File file = new File(filePath);
-        Log.e("filePath", filePath);
-        Log.e("fileName", file.getName());
-        Log.e("ip", getP2pDeviceIP());
-        SendThread sendThread = new SendThread(getP2pDeviceIP(), filePath, file.getName());
-        sendThread.run();
+        if (file.exists()) {
+            Log.e("Send","文件存在，准备发送");
+            Thread sendThread = new Thread(new SendThread(getP2pDeviceIP(), filePath, file.getName()));
+            sendThread.start();
+        }
     }
 
     /**
      * 查看设备是否在已链接状态
+     *
      * @return
      */
-    public boolean checkIfConnect(){
+    public boolean checkIfConnect() {
         return this.isConnected;
     }
 

@@ -27,9 +27,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.transferfile.Bean.MusicBean;
 import com.transferfile.R;
 import com.transferfile.Wifi.WiFiAdmin;
+import com.transferfile.adapter.MusicAdapter;
 import com.transferfile.adapter.TabAdapter;
+import com.transferfile.adapter.VideoAdapter;
 import com.transferfile.fabtoolbarlib.widget.FABToolbarLayout;
 import com.transferfile.tablayout.SlidingTabLayout;
 import com.transferfile.tablayout.listener.OnTabSelectListener;
@@ -44,6 +47,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,OnTabSelectListener,View.OnClickListener {
+    public static String Adapter_CheckBoxChange="Adapter_CheckBoxChange";//文件选中状态
+    public static String Adapter_SelectNum="Adapter_SelectNum";//文件选择个数
+    public static String Adapter_CheckBoxUnClick="Adapter_CheckBoxUnClick";//文件被取消
+    public static String Adapter_CheckBoxClick="Adapter_CheckBoxClick";//文件被选中
+    public static String ViewPageChange="ViewPageChange";//页面改变
     private Context mContext = this;
     private IntentFilter filter;
     private Receiver receiver;
@@ -77,12 +85,8 @@ public class MainActivity extends AppCompatActivity
         initUI();//初始化侧栏
         initTab();//初始化Tab
         filter=new IntentFilter();
-        filter.addAction("ChildAdapter_CheckBoxClick");//有被选中的图片隐藏fab,弹出poupwindow
-        filter.addAction("ChildAdapter_CheckBoxUnClick");//没有选中的图片弹出fab,隐藏popupwindow
-        filter.addAction("ShowImageFragmentDestroyView");//该fragment销毁
-        filter.addAction("ChildAdapter_CheckBoxChange");//选中文件个数发生变化
-        filter.addAction("ViewPageChange");//ViewPage发生变化
-        filter.addAction("WiFiConnectSuccess");//请求建立连接成功
+        filterAddAction();
+
         receiver=new Receiver();
 
         //wifi管理部分初始化
@@ -307,13 +311,28 @@ public class MainActivity extends AppCompatActivity
 //                Toast.makeText(this, "当前view"+currentitem, Toast.LENGTH_SHORT).show();
                 if(currentitem==1)
                     ShowImageFragment.getSif().clearSelectData();
+                if(currentitem==2)
+                    MusicFragment.getMusicFragment().clearSelectData();
+                if(currentitem==3)
+                    VideoFragment.getVideoFragment().clearSelectData();
+                if(currentitem==4)
+                    FolderFragment.getFolderFragment().clearSelectData();
+                if(currentitem==5)
+                    ApplicationFragment.getApplicationFragment().clearSelectData();
                 break;
             case R.id.sendtv_popupwindow://发送文件
-
+                Toast.makeText(this, "发送文件", Toast.LENGTH_SHORT).show();
                 if(vp.getCurrentItem()==1)//当前照片页面
                 {
                     List<String> items= ShowImageFragment.getSif().getSelectImage();
-                    wiFiAdmin.sendFileByPath(items.get(0));
+                    for(int i=0;i<items.size();i++)
+                    wiFiAdmin.sendFileByPath(items.get(i));
+                }
+                if(vp.getCurrentItem()==2)//当前照片页面
+                {
+                    List<MusicBean> items= MusicFragment.getMusicFragment().getSelectMusicList();
+                    for(int i=0;i<items.size();i++)
+                    wiFiAdmin.sendFileByPath(items.get(i).getUrl());
                 }
 
                 break;
@@ -324,36 +343,23 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void filterAddAction()
+    {
+
+        filter.addAction(MainActivity.ViewPageChange);//ViewPage发生变化
+        filter.addAction("WiFiConnectSuccess");//请求建立连接成功
+        filter.addAction(MainActivity.Adapter_CheckBoxUnClick);//文件被取消
+        filter.addAction(MainActivity.Adapter_CheckBoxClick);//文件被选中
+        filter.addAction(MainActivity.Adapter_CheckBoxChange);//文件个数改变
+
+    }
 
     public class Receiver extends BroadcastReceiver{
         @Override
         public void onReceive(final Context context,Intent intent)
         {
-            if(intent.getAction().equals("ChildAdapter_CheckBoxClick"))//文件被选中
-            {
-                selectfolderflag=true;
-                changefablayout();
-                if(fabToolbarLayout.isOpen()==false)
-                    fabToolbarLayout.show();
-            }
-            if(intent.getAction().equals("ChildAdapter_CheckBoxUnClick"))//选中0个文件
-           {
-               selectfolderflag=false;
-              if(fabToolbarLayout.isOpen()==true)
-                  fabToolbarLayout.hide();
-           }
-            if(intent.getAction().equals("ShowImageFragmentDestroyView"))//该ShowImagefragment被销毁
-            {
-                selectfolderflag=false;
-                if(fabToolbarLayout.isOpen()==true)
-                    fabToolbarLayout.hide();
-            }
-            if(intent.getAction().equals("ChildAdapter_CheckBoxChange"))//选中文件个数发生变化
-            {
-                int seleectnum=Integer.parseInt(intent.getExtras().get("selectimagenum").toString());
-                sendnumtv_popupwindow.setText(String.valueOf(seleectnum));
-            }
-            if(intent.getAction().equals("ViewPageChange"))//ViewPage发生变化
+
+            if(intent.getAction().equals(MainActivity.ViewPageChange))//ViewPage发生变化
             {
                 selectfolderflag=false;
                 if(fabToolbarLayout.isOpen()==true)
@@ -362,6 +368,14 @@ public class MainActivity extends AppCompatActivity
                 }
                 if(vp.getCurrentItem()==1&&ShowImageFragment.getSif()!=null)
                     ShowImageFragment.getSif().clearSelectData();
+                if(vp.getCurrentItem()==2&&MusicFragment.getMusicFragment()!=null)
+                    MusicFragment.getMusicFragment().clearSelectData();
+                if(vp.getCurrentItem()==3&&VideoFragment.getVideoFragment()!=null)
+                    VideoFragment.getVideoFragment().clearSelectData();
+                if(vp.getCurrentItem()==4&&FolderFragment.getFolderFragment()!=null)
+                    FolderFragment.getFolderFragment().clearSelectData();
+                if(vp.getCurrentItem()==5&&ApplicationFragment.getApplicationFragment()!=null)
+                    ApplicationFragment.getApplicationFragment().clearSelectData();
             }
             if(intent.getAction().equals("DrawTickDone"))//绘制完成
             {
@@ -372,6 +386,26 @@ public class MainActivity extends AppCompatActivity
                 if(scandialog!=null)
                 scandialog.cancel();
             }
+            if(intent.getAction().equals(MainActivity.Adapter_CheckBoxClick))//文件被选中
+            {
+                selectfolderflag=true;
+                changefablayout();
+                if(fabToolbarLayout.isOpen()==false)
+                    fabToolbarLayout.show();
+            }
+            if(intent.getAction().equals(MainActivity.Adapter_CheckBoxUnClick))//选中0个文件
+            {
+                selectfolderflag=false;
+                if(fabToolbarLayout.isOpen()==true)
+                    fabToolbarLayout.hide();
+            }
+            if(intent.getAction().equals(MainActivity.Adapter_CheckBoxChange))//选中文件个数发生变化
+            {
+                int seleectnum=Integer.parseInt(intent.getExtras().get(MainActivity.Adapter_SelectNum).toString());
+                sendnumtv_popupwindow.setText(String.valueOf(seleectnum));
+            }
+
+
         }
     }
 

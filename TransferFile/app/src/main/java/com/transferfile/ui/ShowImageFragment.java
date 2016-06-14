@@ -86,18 +86,6 @@ public class ShowImageFragment extends Fragment  {
 		return v;
 	}
 
-	@Override
-	public void onDestroyView()
-	{
-		super.onDestroyView();//点击回退键时调用
-		if(adapter.getSelectlist().size()!=0) {
-			Intent intent=new Intent();
-			intent.setAction("ShowImageFragmentDestroyView");
-			getContext().sendBroadcast(intent);
-		}
-
-	}
-
 	/**清除该页面选中数据**/
 	public void clearSelectData()
 	{

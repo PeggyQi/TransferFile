@@ -5,6 +5,7 @@ package com.transferfile.adapter;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,6 +21,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +30,7 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentResolver;
@@ -52,6 +56,7 @@ import android.widget.TextView;
 
 import com.transferfile.Bean.MusicBean;
 import com.transferfile.R;
+import com.transferfile.ui.MainActivity;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -65,7 +70,7 @@ class ViewContainer{
     public TextView music_duration;//music 时长
     public ImageView music_album;//music 封面
     public TextView music_size;//music 大小
-
+    public CheckBox music_checkbox;//checkbox
 }
 
 public class MusicAdapter extends BaseAdapter {
@@ -74,8 +79,13 @@ public class MusicAdapter extends BaseAdapter {
     private List<MusicBean> mp3Infos;   //存放Mp3Info引用的集合
     private MusicBean mp3Info;        //Mp3Info对象引用
     private int pos = -1;           //列表位置
-    private ViewContainer vc;
 
+    private List<ViewContainer> viewHolderList=new ArrayList<ViewContainer>();//所有音乐的viewholder
+    private List<MusicBean> selectMusicList=new ArrayList<MusicBean>();//存放选择的音乐
+    private boolean firstSelect=false;//标记首次选中文件，隐藏fab,显示snackbar
+    public List<MusicBean> getSelectMusicList() {
+        return selectMusicList;
+    }
 
     public MusicAdapter(Context context, List<MusicBean> mp3Infos) {
         this.context = context;
@@ -89,35 +99,72 @@ public class MusicAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final ViewContainer vc;
 
-        vc = null;
         if (convertView == null) {
-            vc = new ViewContainer();
+
             convertView = LayoutInflater.from(context).
                     inflate(R.layout.item_music_list, null);
+            vc = new ViewContainer();
+            viewHolderList.add(vc);
             vc.music_title = (TextView) convertView.findViewById(R.id.music_title);
             vc.music_artist = (TextView) convertView.findViewById(R.id.music_artist);
             vc.music_duration = (TextView) convertView.findViewById(R.id.music_duration);
             vc.music_album = (ImageView) convertView.findViewById(R.id.music_album);
             vc.music_size = (TextView) convertView.findViewById(R.id.music_size);
+            vc.music_checkbox=(CheckBox)convertView.findViewById(R.id.music_checkbox);
             convertView.setTag(vc);
         } else {
             vc = (ViewContainer) convertView.getTag();
+
         }
         mp3Info = mp3Infos.get(position);
         Bitmap bm = getArtwork(context, mp3Info.getId(), mp3Info.getAlbum_id(), true);
         if (bm != null) {
-            Log.e("musicdemo", "bm is not null==========================");
             vc.music_album.setImageBitmap(toRoundBitmap(bm));
-        } else {
-            Log.e("musicdemo", "bm is null============================");
         }
 
         vc.music_size.setText(String.valueOf(formatSize(mp3Info.getSize()) + "MB"));//显示大小
         vc.music_title.setText(mp3Info.getTitle());         //显示标题
         vc.music_artist.setText(mp3Info.getArtist());       //显示艺术家
         vc.music_duration.setText(String.valueOf(formatTime(mp3Info.getDuration()))); //显示长度
+
+        vc.music_checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked==true)
+                {
+                    selectMusicList.add(mp3Infos.get(position));
+                }
+                else {
+                    selectMusicList.remove(mp3Infos.get(position));
+                }
+
+                Intent intentnum=new Intent();//选中状态改变发广播
+                intentnum.setAction(MainActivity.Adapter_CheckBoxChange);
+                intentnum.putExtra(MainActivity.Adapter_SelectNum,String.valueOf(getSelectMusicList().size()));
+                context.sendBroadcast(intentnum);
+
+                if(selectMusicList.size()==0)
+                {
+                    firstSelect=false;
+                    Intent intent=new Intent();
+                    intent.setAction(MainActivity.Adapter_CheckBoxUnClick);
+                    context.sendBroadcast(intent);
+                }
+                if(firstSelect==false&&selectMusicList.size()==1)
+                {
+                    Intent intent=new Intent();
+                    intent.setAction(MainActivity.Adapter_CheckBoxClick);
+                    context.sendBroadcast(intent);
+                    firstSelect=true;
+                }
+
+            }
+        });
         return convertView;
     }
 
@@ -157,11 +204,8 @@ public class MusicAdapter extends BaseAdapter {
     public double formatSize(long size)//大小转换单位
     {
         long size1 = (long) (size / 1024.0 / 1024.0 * 100);
-        Log.e("MusicDemo", String.valueOf(size1));
         long sizel = Math.round(size1);
-        Log.e("MusicDemo", String.valueOf(sizel));
         double sized = sizel / 100.0;
-        Log.e("MusicDemo", String.valueOf(sized));
         return sized;
     }
 
@@ -313,6 +357,16 @@ public class MusicAdapter extends BaseAdapter {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, src, dst, paint);
         return output;
+    }
+
+    /**清除选中数据**/
+    public void clearSelectDate()
+    {
+        for(int i=0;i<viewHolderList.size();i++)
+        {
+            viewHolderList.get(i).music_checkbox.setChecked(false);
+        }
+        notifyDataSetChanged();
     }
 }
 

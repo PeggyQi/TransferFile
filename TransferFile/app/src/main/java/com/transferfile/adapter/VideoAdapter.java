@@ -1,6 +1,7 @@
 package com.transferfile.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.provider.MediaStore;
@@ -9,30 +10,40 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.transferfile.Bean.VideoBean;
 import com.transferfile.R;
+import com.transferfile.ui.MainActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class ViewHolder{
-    public TextView video_title;//music 名称
-    public TextView video_duration;//music 时长
-    public ImageView video_album;//music 封面
-    public TextView video_size;//music 大小
-
+    public TextView video_title;//video 名称
+    public TextView video_duration;//video 时长
+    public ImageView video_album;//video 封面
+    public TextView video_size;//video 大小
+    public CheckBox video_checkbox;//video 复选框
 }
 
 public class VideoAdapter extends BaseAdapter {
-
     private Context context;        //上下文对象引用
-    private List<VideoBean> videoInfos;   //存放Mp3Info引用的集合
-    private VideoBean videoInfo;        //Mp3Info对象引用
+    private List<VideoBean> videoInfos;   //存放Video引用的集合
+    private VideoBean videoInfo;        //video对象引用
     private int pos = -1;           //列表位置
     private ViewHolder viewHolder;
 
+    private List<ViewHolder> viewHolderList=new ArrayList<ViewHolder>();//所有文件的viewholder
+    private List<VideoBean> selectVideoList=new ArrayList<VideoBean>();//存放选择的文件
+    private boolean firstSelect=false;//标记首次选中文件，隐藏fab,显示snackbar
+
+    public List<VideoBean> getSelectVideoList() {
+        return selectVideoList;
+    }
 
     public VideoAdapter(Context context, List<VideoBean> videoInfos) {
         this.context = context;
@@ -51,12 +62,14 @@ public class VideoAdapter extends BaseAdapter {
         viewHolder = null;
         if (convertView == null) {
             viewHolder = new ViewHolder();
+            viewHolderList.add(viewHolder);
             convertView = LayoutInflater.from(context).
                     inflate(R.layout.item_video_list, null);
             viewHolder.video_title = (TextView) convertView.findViewById(R.id.video_title);
             viewHolder.video_duration = (TextView) convertView.findViewById(R.id.video_duration);
             viewHolder.video_album = (ImageView) convertView.findViewById(R.id.video_album);
             viewHolder.video_size = (TextView) convertView.findViewById(R.id.video_size);
+            viewHolder.video_checkbox=(CheckBox)convertView.findViewById(R.id.video_checkbox);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -68,6 +81,43 @@ public class VideoAdapter extends BaseAdapter {
         viewHolder.video_size.setText(String.valueOf(formatSize(videoInfo.getSize()) + "MB"));//显示大小
         viewHolder.video_title.setText(videoInfo.getTitle());         //显示标题
         viewHolder.video_duration.setText(String.valueOf(formatTime(videoInfo.getDuration()))); //显示长度
+
+        viewHolder.video_checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked==true)
+                {
+                    selectVideoList.add(videoInfo);
+                }
+                else {
+                    selectVideoList.remove(videoInfo);
+                }
+
+                Intent intentnum=new Intent();//选中状态改变发广播
+                intentnum.setAction(MainActivity.Adapter_CheckBoxChange);
+                intentnum.putExtra(MainActivity.Adapter_SelectNum,String.valueOf(getSelectVideoList().size()));
+                context.sendBroadcast(intentnum);
+
+                if(selectVideoList.size()==0)
+                {
+                    firstSelect=false;
+                    Intent intent=new Intent();
+                    intent.setAction(MainActivity.Adapter_CheckBoxUnClick);
+                    context.sendBroadcast(intent);
+                }
+                if(firstSelect==false&&selectVideoList.size()==1)
+                {
+                    Intent intent=new Intent();
+                    intent.setAction(MainActivity.Adapter_CheckBoxClick);
+                    context.sendBroadcast(intent);
+                    firstSelect=true;
+                }
+
+            }
+        });
+
         return convertView;
     }
 
@@ -136,6 +186,16 @@ public class VideoAdapter extends BaseAdapter {
         bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
                 ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         return bitmap;
+    }
+
+    /**清除选中数据**/
+    public void clearSelectDate()
+    {
+        for(int i=0;i<viewHolderList.size();i++)
+        {
+            viewHolderList.get(i).video_checkbox.setChecked(false);
+        }
+        notifyDataSetChanged();
     }
 }
 

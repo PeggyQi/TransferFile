@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.transferfile.R;
+import com.transferfile.ui.MainActivity;
 import com.transferfile.utils.MyImageView;
 import com.transferfile.utils.NativeImageLoader;
 
@@ -109,21 +111,21 @@ public class ChildAdapter extends BaseAdapter {
 				}
 
 				Intent intentnum=new Intent();//选中状态改变发广播
-				intentnum.setAction("ChildAdapter_CheckBoxChange");
-				intentnum.putExtra("selectimagenum",String.valueOf(getSelectlist().size()));
+				intentnum.setAction(MainActivity.Adapter_CheckBoxChange);
+				intentnum.putExtra(MainActivity.Adapter_SelectNum,String.valueOf(getSelectlist().size()));
 				context.sendBroadcast(intentnum);
 
 				if(selectlist.size()==0)
 				{
 					 firstSelect=false;
 					 Intent intent=new Intent();
-				     intent.setAction("ChildAdapter_CheckBoxUnClick");
+				     intent.setAction(MainActivity.Adapter_CheckBoxUnClick);
                      context.sendBroadcast(intent);
 				}
 				if(firstSelect==false&&selectlist.size()==1)
 				{
 					Intent intent=new Intent();
-					intent.setAction("ChildAdapter_CheckBoxClick");
+					intent.setAction(MainActivity.Adapter_CheckBoxClick);
 					context.sendBroadcast(intent);
 					firstSelect=true;
 				}

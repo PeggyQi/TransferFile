@@ -54,6 +54,7 @@ public class FindSongs {
 
             if (isMusic != 0 && duration/(1000 * 60) >= 0) {		//只把0分钟以上的音乐添加到集合当中
                 mp3Info.setId(id);
+                mp3Info.setUrl(url);
                 mp3Info.setTitle(title);
                 mp3Info.setArtist(artist);
                 mp3Info.setDuration(duration);
@@ -65,11 +66,11 @@ public class FindSongs {
         return mp3Infos;
     }
 
-    public void setListAdpter(Context context, List<MusicBean> mp3Infos, ListView mMusicList) {
-
-        List<HashMap<String, String>> mp3list = new ArrayList<HashMap<String, String>>();
-       MusicAdapter mAdapter = new MusicAdapter(context, mp3Infos);
-        mMusicList.setAdapter(mAdapter);
-    }
+//    public void setListAdpter(Context context, List<MusicBean> mp3Infos, ListView mMusicList) {
+//
+//        List<HashMap<String, String>> mp3list = new ArrayList<HashMap<String, String>>();
+//       MusicAdapter mAdapter = new MusicAdapter(context, mp3Infos);
+//        mMusicList.setAdapter(mAdapter);
+//    }
 }
 

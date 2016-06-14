@@ -1,6 +1,7 @@
 package com.transferfile.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,22 +14,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.transferfile.R;
+import com.transferfile.ui.MainActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 class FolderViewHolder{
     public TextView folder_title;//文件 名称
     public TextView folder_num;//文件数
     public ImageView folder_icon;//图标
     public TextView folder_size;//文件 大小
-
+    public CheckBox folder_checkbox;//文件 复选框
 }
 
 public class FolderAdapter extends BaseAdapter {
@@ -37,7 +43,13 @@ public class FolderAdapter extends BaseAdapter {
     private File[] files;   //存放File引用的集合
     private File file;
     private FolderViewHolder viewHolder;
+    private List<FolderViewHolder> viewHolderList=new ArrayList<FolderViewHolder>();//所有文件的viewholder
+    private List<File> selectFolderList=new ArrayList<File>();//存放选择的文件
+    private boolean firstSelect=false;//标记首次选中文件，隐藏fab,显示snackbar
 
+    public List<File> getSelectFolderList() {
+        return selectFolderList;
+    }
 
     public FolderAdapter(Context context, File[] files) {
         this.context = context;
@@ -56,12 +68,14 @@ public class FolderAdapter extends BaseAdapter {
         viewHolder = null;
         if (convertView == null) {
             viewHolder = new FolderViewHolder();
+            viewHolderList.add(viewHolder);
             convertView = LayoutInflater.from(context).
                     inflate(R.layout.item_folder_list, null);
             viewHolder.folder_title = (TextView) convertView.findViewById(R.id.folder_title);
             viewHolder.folder_num = (TextView) convertView.findViewById(R.id.folder_num);
             viewHolder.folder_icon = (ImageView) convertView.findViewById(R.id.folder_icon);
             viewHolder.folder_size = (TextView) convertView.findViewById(R.id.folder_size);
+            viewHolder.folder_checkbox=(CheckBox)convertView.findViewById(R.id.folder_checkbox);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (FolderViewHolder) convertView.getTag();
@@ -131,6 +145,41 @@ public class FolderAdapter extends BaseAdapter {
         }
         viewHolder.folder_title.setText(file.getName());
 
+        viewHolder.folder_checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked==true)
+                {
+                    selectFolderList.add(file);
+                }
+                else {
+                    selectFolderList.remove(file);
+                }
+
+                Intent intentnum=new Intent();//选中状态改变发广播
+                intentnum.setAction(MainActivity.Adapter_CheckBoxChange);
+                intentnum.putExtra(MainActivity.Adapter_SelectNum,String.valueOf(getSelectFolderList().size()));
+                context.sendBroadcast(intentnum);
+
+                if(selectFolderList.size()==0)
+                {
+                    firstSelect=false;
+                    Intent intent=new Intent();
+                    intent.setAction(MainActivity.Adapter_CheckBoxUnClick);
+                    context.sendBroadcast(intent);
+                }
+                if(firstSelect==false&&selectFolderList.size()==1)
+                {
+                    Intent intent=new Intent();
+                    intent.setAction(MainActivity.Adapter_CheckBoxClick);
+                    context.sendBroadcast(intent);
+                    firstSelect=true;
+                }
+
+            }
+        });
         return convertView;
     }
 
@@ -306,5 +355,15 @@ public class FolderAdapter extends BaseAdapter {
             {".zip",    "application/zip"},
             {"",        "*/*"}
     };
+
+    /**清除选中数据**/
+    public void clearSelectDate()
+    {
+        for(int i=0;i<viewHolderList.size();i++)
+        {
+            viewHolderList.get(i).folder_checkbox.setChecked(false);
+        }
+        notifyDataSetChanged();
+    }
 }
 

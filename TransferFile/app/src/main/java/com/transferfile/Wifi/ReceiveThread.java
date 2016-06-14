@@ -3,6 +3,10 @@ package com.transferfile.Wifi;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,16 +14,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Created by suxiongye on 6/11/16.
  */
-public class ReceiveThread extends Thread {
+public class ReceiveThread implements Runnable {
     Socket socket = null;
     Socket titleSocket = null;
     private String fileName = "";
-
-    private String TITLETAG = "@@@";
 
     public ReceiveThread(Socket titleSocket, Socket socket) {
         this.titleSocket = titleSocket;
@@ -57,38 +60,48 @@ public class ReceiveThread extends Thread {
 
     public void run() {
         // TODO Auto-generated method stub
+        OutputStream os = null;
+        InputStream is = null;
+        PrintWriter pw = null;
+
         try {
             // get filename
             fileName = getFileName();
-            System.out.println(fileName);
-            InputStream is = socket.getInputStream();
+            Log.e("Receive", "接收文件标题为" + fileName);
+            is = socket.getInputStream();
 
-            File file = null;
             if (fileName != null && !fileName.equals("")) {
-                file = receiveFile(is, fileName);
+                Log.e("Receive", "开始接收文件内容");
+                receiveFile(is, fileName);
             }
             socket.shutdownInput();
 
             // response
-            OutputStream os = socket.getOutputStream();
-            PrintWriter pw = new PrintWriter(os);
-            pw.write("recieve success");
+            os = socket.getOutputStream();
+            pw = new PrintWriter(os);
+            pw.write("success");
             pw.flush();
-
-            os.close();
-            pw.close();
-            is.close();
-            socket.close();
-
+            Log.e("Receive", "文件接收完成");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            try {
+                if (os != null)
+                    os.close();
+                if (pw != null)
+                    pw.close();
+                if (is != null)
+                    is.close();
+                if (socket != null)
+                    socket.close();
+            } catch (Exception e) {
 
+            }
         }
     }
 
-    public File receiveFile(InputStream inputStream, String fileName) {
-        File file = new File(Environment.getExternalStorageDirectory()+"/WifiBase/" + fileName);
+    public void receiveFile(InputStream inputStream, String fileName) {
+        File file = new File(Environment.getExternalStorageDirectory()+"/TransferFile/" + fileName);
         File dirs = new File(file.getParent());
 
         // create the file if not exists
@@ -127,6 +140,5 @@ public class ReceiveThread extends Thread {
                 }
             }
         }
-        return file;
     }
 }

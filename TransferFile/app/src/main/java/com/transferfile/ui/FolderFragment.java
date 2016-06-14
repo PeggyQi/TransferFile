@@ -142,4 +142,10 @@ public class FolderFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
+    /**清除该页面选中数据**/
+    public void clearSelectData()
+    {
+        folderAdapter.clearSelectDate();
+    }
 }

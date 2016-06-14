@@ -34,6 +34,9 @@
             android:layout_marginTop="20dp"
             android:textColor="#000000"
             android:textSize="18sp"
+            android:maxEms="8"
+            android:singleLine="true"
+            android:ellipsize="end"
             />
 
         <TextView

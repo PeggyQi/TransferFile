@@ -71,8 +71,15 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver implements Wi
             NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
             if (networkInfo.isConnected()) {
                 WiFiAdmin.isConnected = true;
+                Log.e("Wifi","连接上");
+                if (WiFiAdmin.fileServer == null){
+                    WiFiAdmin.fileServer = new Thread(new FileServer());
+                    WiFiAdmin.fileServer.start();
+                }
             } else {
+                WiFiAdmin.fileServer = null;
                 WiFiAdmin.isConnected = false;
+                Log.e("Wifi","未连接上");
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Respond to this device's wifi state changing

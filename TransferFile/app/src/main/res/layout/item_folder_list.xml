@@ -50,7 +50,7 @@
             android:textColor="#afabab"
             />
         <CheckBox
-            android:id="@+id/music_checkbox"
+            android:id="@+id/folder_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/listend_margin_left"

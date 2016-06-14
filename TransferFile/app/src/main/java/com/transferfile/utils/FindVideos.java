@@ -56,11 +56,11 @@ public class FindVideos {
         return videoInfos;
     }
 
-    public void setListAdpter(Context context, List<VideoBean> videoInfos, ListView mMusicList) {
-
-        List<HashMap<String, String>> videolist = new ArrayList<HashMap<String, String>>();
-        VideoAdapter mAdapter = new VideoAdapter(context, videoInfos);
-        mMusicList.setAdapter(mAdapter);
-    }
+//    public void setListAdpter(Context context, List<VideoBean> videoInfos, ListView mMusicList) {
+//
+//        List<HashMap<String, String>> videolist = new ArrayList<HashMap<String, String>>();
+//        VideoAdapter mAdapter = new VideoAdapter(context, videoInfos);
+//        mMusicList.setAdapter(mAdapter);
+//    }
 }
 

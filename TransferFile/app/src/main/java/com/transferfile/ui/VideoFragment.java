@@ -1,6 +1,7 @@
 package com.transferfile.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -20,15 +21,21 @@ import java.util.List;
 
 @SuppressLint("ValidFragment")
 public class VideoFragment extends Fragment {
+    public static String VideoFragment_onDestroyView="VideoFragment_onDestroyView";
     private String mTitle;
     private ListView videoList;
     private FindVideos findVideos;
     private List<VideoBean> videoInfos;
     private VideoAdapter videoAdapter;
+    public static VideoFragment videoFragment;
     public static VideoFragment getInstance(String title) {
-        VideoFragment sf = new VideoFragment();
-        sf.mTitle = title;
-        return sf;
+        videoFragment = new VideoFragment();
+        videoFragment.mTitle = title;
+        return videoFragment;
+    }
+
+    public static VideoFragment getVideoFragment() {
+        return videoFragment;
     }
 
     @Override
@@ -43,7 +50,14 @@ public class VideoFragment extends Fragment {
         findVideos=new FindVideos();
         videoInfos = findVideos.getVideoInfos(getActivity().getContentResolver());
         videoAdapter = new VideoAdapter(getContext(), videoInfos);
-        findVideos.setListAdpter(getContext(), videoInfos, videoList);
+        videoList.setAdapter(videoAdapter);
+//        findVideos.setListAdpter(getContext(), videoInfos, videoList);
         return v;
+    }
+
+    /**清除该页面选中数据**/
+    public void clearSelectData()
+    {
+        videoAdapter.clearSelectDate();
     }
 }
