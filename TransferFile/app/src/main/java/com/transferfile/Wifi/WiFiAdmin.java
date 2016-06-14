@@ -136,7 +136,7 @@ public class WiFiAdmin {
         if (isConnected) {
             //开启后台文件接收
             if (fileServer == null) {
-                fileServer = new Thread(new FileServer());
+                fileServer = new Thread(new FileServer(activity));
                 fileServer.start();
             }
             activity.getApplicationContext().sendBroadcast(new Intent("WiFiConnectSuccess"));
@@ -188,7 +188,7 @@ public class WiFiAdmin {
         File file = new File(filePath);
         if (file.exists()) {
             Log.e("Send","文件存在，准备发送");
-            Thread sendThread = new Thread(new SendThread(getP2pDeviceIP(), filePath, file.getName()));
+            Thread sendThread = new Thread(new SendThread(getP2pDeviceIP(), filePath, file.getName(),activity));
             sendThread.start();
         }
     }

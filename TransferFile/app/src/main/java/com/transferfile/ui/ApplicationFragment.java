@@ -62,4 +62,10 @@ public class ApplicationFragment extends Fragment {
     {
         apkAdapter.clearSelectDate();
     }
+
+    /**获得所选文件**/
+    public List<PackageInfo> getSelectApkList()
+    {
+        return apkAdapter.getSelectApkList();
+    }
 }

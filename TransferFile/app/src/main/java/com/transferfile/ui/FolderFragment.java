@@ -148,4 +148,10 @@ public class FolderFragment extends Fragment {
     {
         folderAdapter.clearSelectDate();
     }
+
+    /**获得所选文件**/
+    public List<File> getSelectFolderList()
+    {
+        return folderAdapter.getSelectFolderList();
+    }
 }

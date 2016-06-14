@@ -63,7 +63,7 @@ public class FolderAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
        Log.e("FolderAdapter","FolderAdapter");
         viewHolder = null;
         if (convertView == null) {
@@ -92,10 +92,14 @@ public class FolderAdapter extends BaseAdapter {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            viewHolder.folder_checkbox.setVisibility(View.INVISIBLE);
         }
         else
         {
+            viewHolder.folder_checkbox.setVisibility(View.VISIBLE);
             viewHolder.folder_num.setText("    ");//view的重复使用，需重置该TextView
+
             String type=getMIMEType(file);//获取文件类型
             if(type.equals("application/vnd.android.package-archive"))
             {
@@ -152,10 +156,32 @@ public class FolderAdapter extends BaseAdapter {
 
                 if(isChecked==true)
                 {
-                    selectFolderList.add(file);
+                    boolean exitInlist=false;//列表中是否存在
+                    for(int i=0;i<selectFolderList.size();i++) {
+                        try {
+                            if(files[position].getCanonicalPath().equals(selectFolderList.get(i).getCanonicalPath()))
+                            {
+                                exitInlist=true;
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if(exitInlist==false) {
+                        selectFolderList.add(files[position]);
+                        Log.e("FolderAdapter","settrue:"+files[position].getName());
+                    }
                 }
                 else {
-                    selectFolderList.remove(file);
+                    for(int i=0;i<selectFolderList.size();i++) {
+                        try {
+                            if(files[position].getCanonicalPath().equals(selectFolderList.get(i).getCanonicalPath())) {
+                                selectFolderList.remove(files[position]);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 Intent intentnum=new Intent();//选中状态改变发广播
@@ -180,6 +206,21 @@ public class FolderAdapter extends BaseAdapter {
 
             }
         });
+        boolean selectflag=false;//标记该文件是否被选中
+        for(int i=0;i<getSelectFolderList().size();i++)//view的重复使用，需重置该CheckBox
+        {
+
+            if(file.getName().equals(selectFolderList.get(i).getName())) {
+                viewHolder.folder_checkbox.setChecked(true);
+                Log.e("FolderAdapter","settrue:"+files[position].getName());
+                selectflag=true;
+            }
+
+        }
+        if(selectflag==false) {
+            viewHolder.folder_checkbox.setChecked(false);
+            Log.e("FolderAdapter","setfalse:"+files[position].getName());
+        }
         return convertView;
     }
 

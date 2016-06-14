@@ -1,7 +1,11 @@
 package com.transferfile.Wifi;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
+
+import com.transferfile.ui.MainActivity;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -20,13 +24,16 @@ import java.net.UnknownHostException;
  * Created by suxiongye on 6/11/16.
  */
 public class ReceiveThread implements Runnable {
+    public static String ReceiveSuccess="ReceiveSuccess";
     Socket socket = null;
     Socket titleSocket = null;
+    Activity activity;
     private String fileName = "";
 
-    public ReceiveThread(Socket titleSocket, Socket socket) {
+    public ReceiveThread(Socket titleSocket, Socket socket,Activity activity) {
         this.titleSocket = titleSocket;
         this.socket = socket;
+        this.activity=activity;
     }
 
     // get the file name
@@ -82,6 +89,10 @@ public class ReceiveThread implements Runnable {
             pw.write("success");
             pw.flush();
             Log.e("Receive", "文件接收完成");
+            if(MainActivity.firstReceiveBroadCast==false) {
+                MainActivity.firstReceiveBroadCast=true;
+                activity.getApplicationContext().sendBroadcast(new Intent(ReceiveThread.ReceiveSuccess));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

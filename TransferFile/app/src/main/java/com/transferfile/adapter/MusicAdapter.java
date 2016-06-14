@@ -124,6 +124,8 @@ public class MusicAdapter extends BaseAdapter {
         if (bm != null) {
             vc.music_album.setImageBitmap(toRoundBitmap(bm));
         }
+        else
+            vc.music_album.setImageDrawable(context.getResources().getDrawable(R.drawable.musicicon));//设置默认图标
 
         vc.music_size.setText(String.valueOf(formatSize(mp3Info.getSize()) + "MB"));//显示大小
         vc.music_title.setText(mp3Info.getTitle());         //显示标题
@@ -137,17 +139,35 @@ public class MusicAdapter extends BaseAdapter {
 
                 if(isChecked==true)
                 {
-                    selectMusicList.add(mp3Infos.get(position));
+                    boolean exitInlist=false;//列表中是否存在
+                    for(int i=0;i<selectMusicList.size();i++) {
+                        Log.i("MusicAdapter","List:"+selectMusicList.get(i).getTitle()+"id:"+selectMusicList.get(i).getId());
+                        if(mp3Infos.get(position).getId()==selectMusicList.get(i).getId())
+                        {
+                            exitInlist=true;
+                            Log.e("MusicAdapter","==:"+mp3Infos.get(position).getTitle());
+                        }
+                    }
+                    if(exitInlist==false)
+                    {
+                        selectMusicList.add(mp3Infos.get(position));
+                        Log.e("MusicAdapter","add:"+mp3Infos.get(position).getTitle()+"id:"+mp3Infos.get(position).getId());
+                    }
                 }
                 else {
-                    selectMusicList.remove(mp3Infos.get(position));
+                    for(int i=0;i<selectMusicList.size();i++) {
+                        if(mp3Infos.get(position).getId()==selectMusicList.get(i).getId()) {
+                            selectMusicList.remove(mp3Infos.get(position));
+                            Log.e("MusicAdapter","remove:"+mp3Infos.get(position).getTitle());
+                        }
+                    }
+
                 }
 
                 Intent intentnum=new Intent();//选中状态改变发广播
                 intentnum.setAction(MainActivity.Adapter_CheckBoxChange);
                 intentnum.putExtra(MainActivity.Adapter_SelectNum,String.valueOf(getSelectMusicList().size()));
                 context.sendBroadcast(intentnum);
-
                 if(selectMusicList.size()==0)
                 {
                     firstSelect=false;
@@ -165,6 +185,18 @@ public class MusicAdapter extends BaseAdapter {
 
             }
         });
+
+        boolean selectflag=false;//标记该文件是否被选中
+        for(int i=0;i<getSelectMusicList().size();i++)//view的重复使用，需重置该CheckBox
+        {
+            if(mp3Info.getId()==selectMusicList.get(i).getId()) {
+                vc.music_checkbox.setChecked(true);
+                selectflag=true;
+            }
+        }
+        if(selectflag==false) {
+            vc.music_checkbox.setChecked(false);
+        }
         return convertView;
     }
 

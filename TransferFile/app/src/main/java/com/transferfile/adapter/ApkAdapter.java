@@ -61,7 +61,7 @@ public class ApkAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         viewHolder = null;
         if (convertView == null) {
@@ -95,10 +95,21 @@ public class ApkAdapter extends BaseAdapter {
 
                 if(isChecked==true)
                 {
-                    selectApkList.add(packageInfo);
+                    boolean exitInlist=false;//列表中是否存在
+                    for(int i=0;i<selectApkList.size();i++) {
+                        if(packageInfos.get(position).packageName.equals(selectApkList.get(i).packageName))
+                        {
+                            exitInlist=true;
+                        }
+                    }
+                    if(exitInlist==false)
+                    selectApkList.add(packageInfos.get(position));
                 }
                 else {
-                    selectApkList.remove(packageInfo);
+                    for(int i=0;i<selectApkList.size();i++) {
+                        if (packageInfos.get(position).packageName.equals(selectApkList.get(i).packageName))
+                            selectApkList.remove(packageInfos.get(position));
+                    }
                 }
 
                 Intent intentnum=new Intent();//选中状态改变发广播
@@ -123,6 +134,18 @@ public class ApkAdapter extends BaseAdapter {
 
             }
         });
+
+        boolean selectflag=false;//标记该文件是否被选中
+        for(int i=0;i<getSelectApkList().size();i++)//view的重复使用，需重置该CheckBox
+        {
+            if(packageInfo.packageName.equals(selectApkList.get(i).packageName)) {
+                viewHolder.apk_checkbox.setChecked(true);
+                selectflag=true;
+            }
+        }
+        if(selectflag==false) {
+            viewHolder.apk_checkbox.setChecked(false);
+        }
         return convertView;
     }
 
@@ -139,11 +162,8 @@ public class ApkAdapter extends BaseAdapter {
     public double formatSize(long size)//大小转换单位
     {
         long size1 = (long) (size / 1024.0 / 1024.0 * 100);
-        Log.e("MusicDemo", String.valueOf(size1));
         long sizel = Math.round(size1);
-        Log.e("MusicDemo", String.valueOf(sizel));
         double sized = sizel / 100.0;
-        Log.e("MusicDemo", String.valueOf(sized));
         return sized;
     }
 

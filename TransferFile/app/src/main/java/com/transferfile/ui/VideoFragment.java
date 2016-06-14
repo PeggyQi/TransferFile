@@ -60,4 +60,10 @@ public class VideoFragment extends Fragment {
     {
         videoAdapter.clearSelectDate();
     }
+
+    /**获得所选文件**/
+    public List<VideoBean> getSelectVideoList()
+    {
+        return videoAdapter.getSelectVideoList();
+    }
 }

@@ -1,6 +1,10 @@
 package com.transferfile.Wifi;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
+
+import com.transferfile.ui.MainActivity;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -20,15 +24,16 @@ import java.net.UnknownHostException;
  * Created by suxiongye on 6/11/16.
  */
 public class SendThread implements Runnable {
-
+    public static String SendSuccess="SendSuccess";
     static String deviceHost = null;
     String filePath = null;
     String fileName = null;
-
-    public SendThread(String deviceHost, String filePath, String fileName) {
+    Activity activity;
+    public SendThread(String deviceHost, String filePath, String fileName,Activity activity) {
         this.deviceHost = deviceHost;
         this.filePath = filePath;
         this.fileName = fileName;
+        this.activity=activity;
     }
 
     @Override
@@ -45,7 +50,7 @@ public class SendThread implements Runnable {
         FileInputStream fileInputStream = null;
         InputStream is = null;
         BufferedReader br = null;
-
+        String info = null;
         try {
             titleSocket = new Socket(deviceHost, 8887);
             socket = new Socket(deviceHost, 8888);
@@ -72,15 +77,23 @@ public class SendThread implements Runnable {
 
             br = new BufferedReader(new InputStreamReader(is));
 
-            String info = null;
+
             while ((info = br.readLine()) != null) {
                 //接收信息为success表示发送成功
                 System.out.println("Response:" + info);
+                if(MainActivity.firstSendBroadCast==false) {
+                    MainActivity.firstSendBroadCast=true;
+                    activity.getApplicationContext().sendBroadcast(new Intent(SendThread.SendSuccess));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("send",e.toString());
         } finally {
+            //
+//            if(!info.equals("success")){
+//                //接收失败提示
+//            }
             try {
                 if (socket != null) {
 

@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
@@ -28,7 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.transferfile.Bean.MusicBean;
+import com.transferfile.Bean.VideoBean;
 import com.transferfile.R;
+import com.transferfile.Wifi.ReceiveThread;
+import com.transferfile.Wifi.SendThread;
 import com.transferfile.Wifi.WiFiAdmin;
 import com.transferfile.adapter.MusicAdapter;
 import com.transferfile.adapter.TabAdapter;
@@ -42,6 +47,8 @@ import com.transferfile.utils.GuardLoadingRenderer;
 import com.transferfile.utils.LoadingDrawable;
 import com.transferfile.utils.ViewFindUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +59,8 @@ public class MainActivity extends AppCompatActivity
     public static String Adapter_CheckBoxUnClick="Adapter_CheckBoxUnClick";//文件被取消
     public static String Adapter_CheckBoxClick="Adapter_CheckBoxClick";//文件被选中
     public static String ViewPageChange="ViewPageChange";//页面改变
+    public static boolean firstSendBroadCast=false;//标记是否已经发送广播
+    public static boolean firstReceiveBroadCast=false;//标记是否已经发送广播
     private Context mContext = this;
     private IntentFilter filter;
     private Receiver receiver;
@@ -322,17 +331,41 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.sendtv_popupwindow://发送文件
                 Toast.makeText(this, "发送文件", Toast.LENGTH_SHORT).show();
+                MainActivity.firstSendBroadCast=false;//点击发送文件重置标记便于提示用户
+                MainActivity.firstReceiveBroadCast=false;
                 if(vp.getCurrentItem()==1)//当前照片页面
                 {
                     List<String> items= ShowImageFragment.getSif().getSelectImage();
                     for(int i=0;i<items.size();i++)
                     wiFiAdmin.sendFileByPath(items.get(i));
                 }
-                if(vp.getCurrentItem()==2)//当前照片页面
+                if(vp.getCurrentItem()==2)//当前音乐页面
                 {
                     List<MusicBean> items= MusicFragment.getMusicFragment().getSelectMusicList();
                     for(int i=0;i<items.size();i++)
                     wiFiAdmin.sendFileByPath(items.get(i).getUrl());
+                }
+                if(vp.getCurrentItem()==3)//当前视频页面
+                {
+                    List<VideoBean> items= VideoFragment.getVideoFragment().getSelectVideoList();
+                    for(int i=0;i<items.size();i++)
+                        wiFiAdmin.sendFileByPath(items.get(i).getUrl());
+                }
+                if(vp.getCurrentItem()==4)//当前文件页面
+                {
+                    List<File> items= FolderFragment.getFolderFragment().getSelectFolderList();
+                    for(int i=0;i<items.size();i++)
+                        try {
+                            wiFiAdmin.sendFileByPath(items.get(i).getCanonicalPath());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                }
+                if(vp.getCurrentItem()==5)//当前应用页面
+                {
+                    List<PackageInfo> items= ApplicationFragment.getApplicationFragment().getSelectApkList();
+                    for(int i=0;i<items.size();i++)
+                        wiFiAdmin.sendFileByPath(items.get(i).applicationInfo.publicSourceDir);//应用程序路径待测
                 }
 
                 break;
@@ -351,6 +384,8 @@ public class MainActivity extends AppCompatActivity
         filter.addAction(MainActivity.Adapter_CheckBoxUnClick);//文件被取消
         filter.addAction(MainActivity.Adapter_CheckBoxClick);//文件被选中
         filter.addAction(MainActivity.Adapter_CheckBoxChange);//文件个数改变
+        filter.addAction(ReceiveThread.ReceiveSuccess);//接受文件成功
+        filter.addAction(SendThread.SendSuccess);//发送文件成功
 
     }
 
@@ -403,6 +438,14 @@ public class MainActivity extends AppCompatActivity
             {
                 int seleectnum=Integer.parseInt(intent.getExtras().get(MainActivity.Adapter_SelectNum).toString());
                 sendnumtv_popupwindow.setText(String.valueOf(seleectnum));
+            }
+            if(intent.getAction().equals(ReceiveThread.ReceiveSuccess))//接受文件成功
+            {
+                Toast.makeText(MainActivity.this, "接收文件成功", Toast.LENGTH_SHORT).show();
+            }
+            if(intent.getAction().equals(SendThread.SendSuccess))//发送文件成功
+            {
+                Toast.makeText(MainActivity.this, "发送文件成功", Toast.LENGTH_SHORT).show();
             }
 
 

@@ -73,7 +73,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver implements Wi
                 WiFiAdmin.isConnected = true;
                 Log.e("Wifi","连接上");
                 if (WiFiAdmin.fileServer == null){
-                    WiFiAdmin.fileServer = new Thread(new FileServer());
+                    WiFiAdmin.fileServer = new Thread(new FileServer(activity));
                     WiFiAdmin.fileServer.start();
                 }
             } else {

@@ -57,7 +57,7 @@ public class VideoAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         viewHolder = null;
         if (convertView == null) {
@@ -89,10 +89,21 @@ public class VideoAdapter extends BaseAdapter {
 
                 if(isChecked==true)
                 {
-                    selectVideoList.add(videoInfo);
+                    boolean exitInlist=false;//列表中是否存在
+                    for(int i=0;i<selectVideoList.size();i++) {
+                        if(videoInfos.get(position).getId()==selectVideoList.get(i).getId())
+                        {
+                            exitInlist=true;
+                        }
+                    }
+                    if(exitInlist==false)
+                    selectVideoList.add(videoInfos.get(position));
                 }
                 else {
-                    selectVideoList.remove(videoInfo);
+                    for(int i=0;i<selectVideoList.size();i++) {
+                        if (videoInfos.get(position).getId() == selectVideoList.get(i).getId())
+                            selectVideoList.remove(videoInfos.get(position));
+                    }
                 }
 
                 Intent intentnum=new Intent();//选中状态改变发广播
@@ -117,6 +128,18 @@ public class VideoAdapter extends BaseAdapter {
 
             }
         });
+
+        boolean selectflag=false;//标记该文件是否被选中
+        for(int i=0;i<getSelectVideoList().size();i++)//view的重复使用，需重置该CheckBox
+        {
+            if(videoInfo.getId()==selectVideoList.get(i).getId()) {
+                viewHolder.video_checkbox.setChecked(true);
+                selectflag=true;
+            }
+        }
+        if(selectflag==false) {
+            viewHolder.video_checkbox.setChecked(false);
+        }
 
         return convertView;
     }

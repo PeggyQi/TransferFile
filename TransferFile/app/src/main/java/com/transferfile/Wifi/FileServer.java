@@ -1,5 +1,6 @@
 package com.transferfile.Wifi;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -11,7 +12,11 @@ import java.net.Socket;
  * Created by suxiongye on 6/11/16.
  */
 public class FileServer implements Runnable{
-
+    private Activity activity;
+    public FileServer(Activity activity)
+    {
+        this.activity=activity;
+    }
     @Override
     public void run() {
         startReceive();
@@ -34,7 +39,7 @@ public class FileServer implements Runnable{
                 Log.e("Receive","接收到文件标题发送请求");
                 socket = serverSocket.accept();
                 Log.e("Receive","接收到文件内容发送请求");
-                Thread receiveThread = new Thread(new ReceiveThread(titleSocket, socket));
+                Thread receiveThread = new Thread(new ReceiveThread(titleSocket, socket,activity));
                 receiveThread.start();
                 Log.e("Receive","接收到第"+count+"个文件");
                 //断开链接则跳出
