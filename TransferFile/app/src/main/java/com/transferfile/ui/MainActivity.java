@@ -225,6 +225,10 @@ public class MainActivity extends AppCompatActivity
         }
         else if(fabToolbarLayout.isOpen()==true)
             fabToolbarLayout.hide();
+        else if(vp.getCurrentItem()==0)//当前页面为历史文档时，按返回键可回到上一目录
+        {
+            HistoryFragment.getHistoryFragment().backMenu();
+        }
         else if(vp.getCurrentItem()==4)//当前页面为文档时，按返回键可回到上一目录
         {
             FolderFragment.getFolderFragment().backMenu();
@@ -318,6 +322,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.cancel_popupwindow:       //取消选中的所有文件
                  int currentitem=vp.getCurrentItem();
 //                Toast.makeText(this, "当前view"+currentitem, Toast.LENGTH_SHORT).show();
+                if(currentitem==0)
+                    HistoryFragment.getHistoryFragment().clearSelectData();
                 if(currentitem==1)
                     ShowImageFragment.getSif().clearSelectData();
                 if(currentitem==2)
@@ -333,6 +339,16 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, "发送文件", Toast.LENGTH_SHORT).show();
                 MainActivity.firstSendBroadCast=false;//点击发送文件重置标记便于提示用户
                 MainActivity.firstReceiveBroadCast=false;
+                if(vp.getCurrentItem()==0)//当前历史文件页面
+                {
+                    List<File> items= HistoryFragment.getHistoryFragment().getSelectHistoryList();
+                    for(int i=0;i<items.size();i++)
+                        try {
+                            wiFiAdmin.sendFileByPath(items.get(i).getCanonicalPath());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                }
                 if(vp.getCurrentItem()==1)//当前照片页面
                 {
                     List<String> items= ShowImageFragment.getSif().getSelectImage();
@@ -401,6 +417,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     fabToolbarLayout.hide();
                 }
+                if(vp.getCurrentItem()==0&&HistoryFragment.getHistoryFragment()!=null)
+                    HistoryFragment.getHistoryFragment().clearSelectData();
                 if(vp.getCurrentItem()==1&&ShowImageFragment.getSif()!=null)
                     ShowImageFragment.getSif().clearSelectData();
                 if(vp.getCurrentItem()==2&&MusicFragment.getMusicFragment()!=null)

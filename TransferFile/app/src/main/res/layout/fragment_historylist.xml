@@ -3,13 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/card_title_tv"
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="历史接收文件"
+       android:layout_marginLeft="16dp"
+       android:layout_marginTop="10dp"/>
+    <ListView
+        android:id="@+id/historylistview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:text="hello"/>
+        android:layout_height="500dp"
+        android:divider="#ffffff"
+        android:layout_marginTop="35dp"/>
 
 </RelativeLayout>
